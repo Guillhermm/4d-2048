@@ -1,0 +1,103 @@
+:root {
+  --bg: #eef1f5;
+  --surface: #f8f9fb;
+  --ink: #18212e;
+  --muted: #586477;
+  --line: #d3d9e2;
+  --accent: #2b56c9;
+  --accent-ink: #ffffff;
+  --stage: #f8f9fb;
+  --ax-x: #2b56c9;
+  --ax-y: #17897c;
+  --ax-z: #b07a12;
+  --ax-w: #c0396f;
+  --tile-low: #d5ddeb;
+  --tile-high: #2b2f6b;
+  --tile-ink-light: #18212e;
+  --tile-ink-dark: #ffffff;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0f141b;
+    --surface: #161d27;
+    --ink: #e6ebf2;
+    --muted: #93a0b3;
+    --line: #273243;
+    --accent: #7d9cf0;
+    --accent-ink: #0f141b;
+    --stage: #121820;
+    --ax-x: #7d9cf0;
+    --ax-y: #3fc4b2;
+    --ax-z: #e3b04b;
+    --ax-w: #ff6f9f;
+    --tile-low: #3d4d6b;
+    --tile-high: #f0d7a1;
+    --tile-ink-light: #e6ebf2;
+    --tile-ink-dark: #121820;
+  }
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.wrap {
+  max-width: 73.75rem;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.125rem;
+}
+
+header { display: grid; gap: 0.25rem; }
+
+h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.625rem, 4vw, 2.25rem);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.lede { margin: 0; color: var(--muted); max-width: 68ch; }
+
+.layout { display: grid; gap: 1.125rem; }
+
+.stage {
+  background: var(--stage);
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  overflow: hidden;
+  display: grid;
+}
+
+.canvas-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 78vh;
+  max-width: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.canvas-box:active { cursor: grabbing; }
+
+canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
