@@ -101,3 +101,13 @@ h1 {
 .canvas-box:active { cursor: grabbing; }
 
 canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.caption {
+  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 0.875rem 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  /* The border spans the stage; the text stays near 75 characters wide. */
+  padding-right: max(1rem, calc(100% - 75ch));
+}

@@ -1,7 +1,11 @@
 import { applyMatrix } from "./linalg.js";
 import { perspectiveScale, projectTo2D } from "./projection.js";
 import { cellCount } from "./game.js";
-import { cellPosition } from "./board.js";
+import { cellPosition, screenAxes } from "./board.js";
+
+const AXIS_LABELS = ["x", "y", "z", "w"];
+// The axis indicator is drawn around this point from the bottom-left corner, labels included.
+const INDICATOR_CENTER = 58;
 
 export const createRenderer = (canvas, box) => {
   const ctx = canvas.getContext("2d");
@@ -27,6 +31,35 @@ export const createRenderer = (canvas, box) => {
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+
+  const drawAxisIndicator = (R, highlight) => {
+    const ox = INDICATOR_CENTER;
+    const oy = height - INDICATOR_CENTER;
+    const len = 40;
+    ctx.font = "500 12px 'IBM Plex Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    screenAxes(R).forEach(([x, y], axis) => {
+      const lit = highlight && highlight.axis === axis;
+      const sign = lit ? highlight.dir : 1;
+      const ex = ox + x * len * sign;
+      const ey = oy - y * len * sign;
+      ctx.strokeStyle = colors.axes[axis];
+      ctx.fillStyle = colors.axes[axis];
+      ctx.globalAlpha = lit ? 1 : 0.8;
+      ctx.lineWidth = lit ? 3.5 : 2;
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(ex, ey, lit ? 4 : 3, 0, Math.PI * 2);
+      ctx.fill();
+      const label = `${sign > 0 ? "+" : "−"}${AXIS_LABELS[axis]}`;
+      ctx.fillText(label, ox + x * (len + 12) * sign, oy - y * (len + 12) * sign);
+    });
+    ctx.globalAlpha = 1;
   };
 
   const draw = ({ side, R, edges }) => {
@@ -75,6 +108,7 @@ export const createRenderer = (canvas, box) => {
     }
     ctx.globalAlpha = 1;
 
+    drawAxisIndicator(R);
   };
 
   return {

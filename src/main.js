@@ -1,5 +1,5 @@
-import { identity, reorthonormalize, rotate } from "./linalg.js";
-import { gridEdges } from "./board.js";
+import { reorthonormalize, rotate } from "./linalg.js";
+import { compassView, gridEdges } from "./board.js";
 import { createRenderer } from "./renderer.js";
 
 const AUTO_ROTATION = [
@@ -11,21 +11,12 @@ const $ = (id) => document.getElementById(id);
 const box = $("canvasBox");
 const renderer = createRenderer($("board"), box);
 
-// Tilted a little so that z and w are not seen end-on.
-const tiltedView = () => {
-  const R = identity(4);
-  rotate(R, 0, 2, 0.6);
-  rotate(R, 1, 2, -0.4);
-  rotate(R, 0, 3, 0.9);
-  rotate(R, 1, 3, 0.5);
-  return R;
-};
-
 const state = {
   // The engine handles any side; the game ships the 2×2×2×2 board only.
   side: 2,
-  R: tiltedView(),
-  autoRotate: true,
+  R: compassView(),
+  // Off by default: a still view keeps the eight swipe directions 45° apart.
+  autoRotate: false,
   edges: gridEdges(2),
 };
 
