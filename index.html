@@ -17,15 +17,22 @@
 <div class="wrap">
   <header>
     <h1>2048 4D</h1>
-    <p class="lede">2048 played on a real four-dimensional board.</p>
+    <p class="lede">The 2×2×2×2 board is the 16 vertices of a 4D hypercube. Each edge joins two neighboring cells, and its color shows the axis. To push the tiles, swipe the way an axis points on screen.</p>
   </header>
 
   <div class="layout">
+    <section class="scorebar" aria-label="Score">
+      <div class="score-box"><span class="label">Score</span><output id="score">0</output></div>
+      <div class="score-box"><span class="label">Best</span><output id="best">0</output></div>
+      <button type="button" id="newGame" class="btn-primary">New game</button>
+      <span class="move-count" id="moveCount"></span>
+    </section>
+
     <section class="stage" aria-label="Board">
       <div class="canvas-box" id="canvasBox">
         <canvas id="board" role="img" aria-label="4D board projected on screen"></canvas>
       </div>
-      <p class="caption">The axis indicator in the corner shows where each axis points right now.</p>
+      <p class="caption">The axis indicator in the corner shows where each axis points right now. Tiles only merge along an edge, so two equal tiles on opposite corners of a face never meet in a single move.</p>
     </section>
   </div>
 </div>

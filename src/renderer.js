@@ -7,6 +7,11 @@ const AXIS_LABELS = ["x", "y", "z", "w"];
 // The axis indicator is drawn around this point from the bottom-left corner, labels included.
 const INDICATOR_CENTER = 58;
 
+const parseHex = (hex) => {
+  const s = hex.replace("#", "");
+  return [0, 2, 4].map((o) => parseInt(s.slice(o, o + 2), 16));
+};
+
 export const createRenderer = (canvas, box) => {
   const ctx = canvas.getContext("2d");
   let width = 0;
@@ -19,8 +24,19 @@ export const createRenderer = (canvas, box) => {
     const token = (name) => cs.getPropertyValue(name).trim();
     colors = {
       axes: ["--ax-x", "--ax-y", "--ax-z", "--ax-w"].map(token),
+      tileLow: parseHex(token("--tile-low")),
+      tileHigh: parseHex(token("--tile-high")),
+      onLight: token("--tile-ink-light"),
+      onDark: token("--tile-ink-dark"),
       empty: token("--muted"),
     };
+  };
+
+  const tileColor = (value) => {
+    const t = Math.min(1, Math.max(0, (Math.log2(value) - 1) / 10));
+    const { tileLow: a, tileHigh: b } = colors;
+    const fill = `rgb(${a.map((x, k) => Math.round(x + (b[k] - x) * t)).join(",")})`;
+    return { fill, ink: t > 0.4 ? colors.onDark : colors.onLight };
   };
 
   const resize = () => {
@@ -62,7 +78,8 @@ export const createRenderer = (canvas, box) => {
     ctx.globalAlpha = 1;
   };
 
-  const draw = ({ side, R, edges }) => {
+  // Positions in `tiles` are world coordinates; they are rotated and projected here.
+  const draw = ({ side, R, edges, tiles, highlight }) => {
     ctx.clearRect(0, 0, width, height);
     const tileHalf = 0.1;
     const cells = [];
@@ -108,7 +125,33 @@ export const createRenderer = (canvas, box) => {
     }
     ctx.globalAlpha = 1;
 
-    drawAxisIndicator(R);
+    const baseSize = k * tileHalf * 2;
+    const placed = tiles
+      .map((t) => {
+        const world = applyMatrix(R, t.p);
+        return { screen: projectTo2D(world), f: perspectiveScale(world), value: t.value, scale: t.scale };
+      })
+      .sort((a, b) => a.f - b.f);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (const t of placed) {
+      const size = baseSize * t.f * t.scale;
+      if (size < 1) continue;
+      const [x, y] = at(t.screen);
+      const { fill, ink } = tileColor(t.value);
+      const digits = String(t.value).length;
+      const fontScale = digits <= 2 ? 0.46 : digits === 3 ? 0.36 : 0.28;
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x - size / 2, y - size / 2, size, size, size * 0.18);
+      else ctx.rect(x - size / 2, y - size / 2, size, size);
+      ctx.fill();
+      ctx.fillStyle = ink;
+      ctx.font = `600 ${Math.round(size * fontScale)}px 'IBM Plex Mono', monospace`;
+      ctx.fillText(String(t.value), x, y + size * 0.02);
+    }
+
+    drawAxisIndicator(R, highlight);
   };
 
   return {
