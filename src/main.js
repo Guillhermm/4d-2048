@@ -3,6 +3,7 @@ import { canMove, cellCount, move, newGame, spawn } from "./game.js";
 import { cellPosition, compassView, gridEdges } from "./board.js";
 import { createRenderer } from "./renderer.js";
 
+const AXIS_NAMES = ["x", "y", "z", "w"];
 const AUTO_ROTATION = [
   [0, 3, 0.1],
   [1, 2, 0.06],
@@ -106,11 +107,39 @@ window.addEventListener("keydown", (e) => {
   play(mapped[0], mapped[1]);
 });
 
+const buildPad = () => {
+  const pad = $("pad");
+  AXIS_NAMES.forEach((name, axis) => {
+    for (const dir of [-1, 1]) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = `move-${dir > 0 ? "plus" : "minus"}-${name}`;
+      btn.className = `pad-btn axis-${name}`;
+      const label = document.createElement("span");
+      label.textContent = `${dir > 0 ? "+" : "−"}${name}`;
+      const key = document.createElement("kbd");
+      key.textContent = keyLabel(axis, dir);
+      btn.setAttribute("aria-label", `Move toward ${label.textContent}`);
+      btn.append(label, key);
+      btn.addEventListener("click", () => play(axis, dir));
+      pad.append(btn);
+    }
+  });
+};
+
+const keyLabel = (axis, dir) => {
+  if (axis === 0) return dir > 0 ? "→" : "←";
+  if (axis === 1) return dir > 0 ? "↑" : "↓";
+  if (axis === 2) return dir > 0 ? "W" : "S";
+  return dir > 0 ? "D" : "A";
+};
+
 $("newGame").addEventListener("click", start);
 
 new ResizeObserver(() => renderer.resize()).observe(box);
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => renderer.readColors());
 
+buildPad();
 renderer.readColors();
 renderer.resize();
 start();
