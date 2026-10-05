@@ -71,3 +71,34 @@ export const move = (cells, side, axis, dir, dims = DIMENSIONS) => {
   const moved = next.some((v, i) => v !== cells[i]);
   return { cells: next, moved, gained, moves, merges };
 };
+
+// Places a 2 (90%) or a 4 (10%) on a random empty cell. Returns its index, or -1 when full.
+export const spawn = (cells, random = Math.random) => {
+  const empty = [];
+  cells.forEach((v, i) => {
+    if (!v) empty.push(i);
+  });
+  if (!empty.length) return -1;
+  const index = empty[Math.floor(random() * empty.length)];
+  cells[index] = random() < 0.9 ? 2 : 4;
+  return index;
+};
+
+export const canMove = (cells, side, dims = DIMENSIONS) => {
+  if (cells.some((v) => !v)) return true;
+  for (let axis = 0; axis < dims; axis++) {
+    for (const line of linesAlong(axis, side, dims)) {
+      for (let t = 1; t < line.length; t++) {
+        if (cells[line[t]] === cells[line[t - 1]]) return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const newGame = (side, random = Math.random, dims = DIMENSIONS) => {
+  const cells = emptyBoard(side, dims);
+  spawn(cells, random);
+  spawn(cells, random);
+  return cells;
+};

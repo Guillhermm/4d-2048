@@ -2,10 +2,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  canMove,
   cellCount,
   emptyBoard,
   linesAlong,
   move,
+  newGame,
+  spawn,
   toCoords,
   toIndex,
 } from "../src/game.js";
@@ -70,4 +73,29 @@ test("tiles on different lines of the tesseract never merge", () => {
   cells[toIndex([1, 1, 0, 0], side)] = 2; // diagonal neighbor, not on an x line with the first
   const { cells: next } = move(cells, side, 0, 1);
   assert.equal(next.filter(Boolean).length, 2);
+});
+
+test("spawn fills only empty cells, with 2 or 4", () => {
+  const cells = [2, 0, 4, 0];
+  const values = [0.6, 0.95]; // picks the second empty cell, then a 4
+  const index = spawn(cells, () => values.shift());
+  assert.equal(index, 3);
+  assert.equal(cells[3], 4);
+  assert.equal(spawn([2, 4], () => 0), -1);
+});
+
+test("a new game starts with two tiles", () => {
+  assert.equal(newGame(2).filter(Boolean).length, 2);
+  assert.equal(newGame(3).filter(Boolean).length, 2);
+});
+
+test("canMove is false only when full with no equal neighbors on any axis", () => {
+  const side = 2;
+  const cells = emptyBoard(side).map((_, i) => {
+    const parity = toCoords(i, side).reduce((a, b) => a + b, 0) % 2;
+    return parity ? 2 : 4; // checkerboard: every axis neighbor differs
+  });
+  assert.equal(canMove(cells, side), false);
+  cells[0] = cells[1];
+  assert.equal(canMove(cells, side), true);
 });
