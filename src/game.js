@@ -102,3 +102,20 @@ export const newGame = (side, random = Math.random, dims = DIMENSIONS) => {
   spawn(cells, random);
   return cells;
 };
+
+// Picks the signed axis whose screen direction is closest to the swipe.
+// Axes with a zero vector are skipped. Returns { axis, dir } or null.
+export const directionFromSwipe = (swipe, axisVectors) => {
+  const len = Math.hypot(swipe[0], swipe[1]);
+  if (len === 0) return null;
+  let best = null;
+  axisVectors.forEach((v, axis) => {
+    const vl = Math.hypot(v[0], v[1]);
+    if (vl < 1e-6) return;
+    const cos = (swipe[0] * v[0] + swipe[1] * v[1]) / (len * vl);
+    for (const dir of [1, -1]) {
+      if (!best || cos * dir > best.score) best = { axis, dir, score: cos * dir };
+    }
+  });
+  return best && { axis: best.axis, dir: best.dir };
+};

@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   canMove,
   cellCount,
+  directionFromSwipe,
   emptyBoard,
   linesAlong,
   move,
@@ -98,4 +99,18 @@ test("canMove is false only when full with no equal neighbors on any axis", () =
   assert.equal(canMove(cells, side), false);
   cells[0] = cells[1];
   assert.equal(canMove(cells, side), true);
+});
+
+test("a swipe picks the closest projected axis direction", () => {
+  const axes = [
+    [1, 0],
+    [0, 1],
+    [0.7, 0.7],
+    [-0.6, 0.8],
+  ];
+  assert.deepEqual(directionFromSwipe([10, 0], axes), { axis: 0, dir: 1 });
+  assert.deepEqual(directionFromSwipe([0, -5], axes), { axis: 1, dir: -1 });
+  assert.deepEqual(directionFromSwipe([5, 5], axes), { axis: 2, dir: 1 });
+  assert.deepEqual(directionFromSwipe([6, -8], axes), { axis: 3, dir: -1 });
+  assert.equal(directionFromSwipe([0, 0], axes), null);
 });

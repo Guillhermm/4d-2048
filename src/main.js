@@ -1,11 +1,14 @@
 import { reorthonormalize, rotate } from "./linalg.js";
-import { canMove, cellCount, move, newGame, spawn, WIN_VALUE } from "./game.js";
-import { cellPosition, compassView, gridEdges } from "./board.js";
+import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
+import { cellPosition, compassView, gridEdges, screenAxes } from "./board.js";
 import { createRenderer } from "./renderer.js";
 
 const AXIS_NAMES = ["x", "y", "z", "w"];
 const SLIDE_MS = 150;
 const POP_MS = 170;
+const SWIPE_MIN_PX = 24;
+// An axis pointing almost straight into the screen can't be picked by a swipe.
+const MIN_AXIS_LENGTH = 0.12;
 const AUTO_ROTATION = [
   [0, 3, 0.1],
   [1, 2, 0.06],
@@ -143,6 +146,8 @@ const sceneTiles = (now) => {
   return tiles;
 };
 
+const swipeAxes = () => screenAxes(state.R).map((v) => (Math.hypot(v[0], v[1]) < MIN_AXIS_LENGTH ? [0, 0] : v));
+
 let lastTime = performance.now();
 let frame = 0;
 const tick = (now) => {
@@ -169,6 +174,26 @@ window.addEventListener("keydown", (e) => {
   if (!mapped) return;
   e.preventDefault();
   play(mapped[0], mapped[1]);
+});
+
+let drag = null;
+box.addEventListener("pointerdown", (e) => {
+  if (e.target.closest(".overlay")) return;
+  drag = { x0: e.clientX, y0: e.clientY };
+  box.setPointerCapture(e.pointerId);
+});
+box.addEventListener("pointerup", (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x0;
+  const dy = e.clientY - drag.y0;
+  drag = null;
+  if (Math.hypot(dx, dy) < SWIPE_MIN_PX) return;
+  // Screen y grows downward; board y grows upward.
+  const chosen = directionFromSwipe([dx, -dy], swipeAxes());
+  if (chosen) play(chosen.axis, chosen.dir);
+});
+box.addEventListener("pointercancel", () => {
+  drag = null;
 });
 
 const buildPad = () => {
