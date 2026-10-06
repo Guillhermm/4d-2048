@@ -31,6 +31,13 @@
     <section class="stage" aria-label="Board">
       <div class="canvas-box" id="canvasBox">
         <canvas id="board" role="img" aria-label="4D board projected on screen"></canvas>
+        <div class="overlay" id="overlay" hidden>
+          <div class="overlay-card" role="dialog" aria-labelledby="overlayTitle">
+            <h2 id="overlayTitle"></h2>
+            <p id="overlayText"></p>
+            <button type="button" id="overlayPrimary"></button>
+          </div>
+        </div>
       </div>
       <p class="caption">The axis indicator in the corner shows where each axis points right now. Tiles only merge along an edge, so two equal tiles on opposite corners of a face never meet in a single move.</p>
     </section>

@@ -219,6 +219,40 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .axis-w { --axis: var(--ax-w); }
 
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--stage) 70%, transparent);
+  padding: 1rem;
+}
+
+.overlay-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  padding: 1.125rem 1.25rem;
+  display: grid;
+  gap: 0.625rem;
+  max-width: 20rem;
+  text-align: center;
+}
+
+.overlay-card h2 { font-family: var(--display); font-size: 1.625rem; margin: 0; }
+
+.overlay-card p { margin: 0; color: var(--muted); }
+
+.overlay-card button {
+  font: inherit;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+
 .btn-primary {
   font: inherit;
   font-weight: 600;

@@ -1,9 +1,11 @@
 import { reorthonormalize, rotate } from "./linalg.js";
-import { canMove, cellCount, move, newGame, spawn } from "./game.js";
+import { canMove, cellCount, move, newGame, spawn, WIN_VALUE } from "./game.js";
 import { cellPosition, compassView, gridEdges } from "./board.js";
 import { createRenderer } from "./renderer.js";
 
 const AXIS_NAMES = ["x", "y", "z", "w"];
+const SLIDE_MS = 150;
+const POP_MS = 170;
 const AUTO_ROTATION = [
   [0, 3, 0.1],
   [1, 2, 0.06],
@@ -31,10 +33,13 @@ const state = {
   score: 0,
   best: 0,
   moves: 0,
+  won: false,
   over: false,
+  overlay: null,
   R: compassView(),
   // Off by default: a still view keeps the eight swipe directions 45° apart.
   autoRotate: false,
+  anim: null,
   highlight: null,
   positions: [],
   edges: [],
@@ -44,10 +49,13 @@ const start = () => {
   state.cells = newGame(state.side);
   state.score = 0;
   state.moves = 0;
+  state.won = false;
   state.over = false;
+  state.anim = null;
   state.positions = Array.from({ length: cellCount(state.side) }, (_, i) => cellPosition(i, state.side));
   state.edges = gridEdges(state.side);
   renderer.resetFit();
+  setOverlay(null);
   updateScores();
 };
 
@@ -58,23 +66,79 @@ const updateScores = () => {
   $("moveCount").textContent = state.moves === 1 ? "1 move" : `${state.moves} moves`;
 };
 
+const setOverlay = (kind) => {
+  state.overlay = kind;
+  const overlay = $("overlay");
+  if (!kind) {
+    overlay.hidden = true;
+    return;
+  }
+  const primary = $("overlayPrimary");
+  if (kind === "win") {
+    $("overlayTitle").textContent = "2048!";
+    $("overlayText").textContent = `You reached ${WIN_VALUE} in ${state.moves} moves on a 4D board.`;
+    primary.textContent = "Keep playing";
+  } else {
+    $("overlayTitle").textContent = "No moves left";
+    $("overlayText").textContent = `No axis has equal neighbors. Score: ${state.score}.`;
+    primary.textContent = "New game";
+  }
+  const wasHidden = overlay.hidden;
+  overlay.hidden = false;
+  if (wasHidden) primary.focus();
+};
+
+$("overlayPrimary").addEventListener("click", () => {
+  if (state.overlay === "win") setOverlay(null);
+  else start();
+});
+
 const play = (axis, dir) => {
-  if (state.over) return;
+  if (state.over || state.overlay) return;
   const result = move(state.cells, state.side, axis, dir);
   state.highlight = { axis, dir, until: performance.now() + 450 };
   if (!result.moved) return;
   state.cells = result.cells;
-  spawn(state.cells);
+  const spawned = spawn(state.cells);
   state.score += result.gained;
   state.moves += 1;
+  state.anim = {
+    start: performance.now(),
+    moves: result.moves,
+    merged: new Set(result.merges.map((m) => m.at)),
+    spawned,
+  };
   updateScores();
-  if (!canMove(state.cells, state.side)) state.over = true;
+  if (!state.won && result.merges.some((m) => m.value >= WIN_VALUE)) {
+    state.won = true;
+    setOverlay("win");
+  } else if (!canMove(state.cells, state.side)) {
+    state.over = true;
+    setOverlay("over");
+  }
 };
 
-const sceneTiles = () => {
+const ease = (u) => 1 - (1 - u) * (1 - u);
+const lerp = (a, b, k) => a.map((x, i) => x + (b[i] - x) * k);
+
+const sceneTiles = (now) => {
+  const anim = state.anim;
+  const elapsed = anim ? now - anim.start : Infinity;
+  if (anim && elapsed < SLIDE_MS) {
+    const e = ease(elapsed / SLIDE_MS);
+    return anim.moves.map((m) => ({ p: lerp(state.positions[m.from], state.positions[m.to], e), value: m.value, scale: 1 }));
+  }
+  const since = elapsed - SLIDE_MS;
   const tiles = [];
   state.cells.forEach((value, i) => {
-    if (value) tiles.push({ p: state.positions[i], value, scale: 1 });
+    if (!value) return;
+    let scale = 1;
+    if (anim && since < POP_MS) {
+      const u = since / POP_MS;
+      if (i === anim.spawned) scale = u;
+      else if (anim.merged.has(i)) scale = 1 + 0.2 * Math.sin(Math.PI * u);
+    }
+    tiles.push({ p: state.positions[i], value, scale });
   });
   return tiles;
 };
@@ -93,7 +157,7 @@ const tick = (now) => {
     side: state.side,
     R: state.R,
     edges: state.edges,
-    tiles: sceneTiles(),
+    tiles: sceneTiles(now),
     highlight: state.highlight,
   });
   requestAnimationFrame(tick);
