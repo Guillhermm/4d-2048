@@ -253,6 +253,50 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   cursor: pointer;
 }
 
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.icon {
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.view-controls {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.view-btn,
+.view-chip {
+  font: inherit;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.view-controls-top { top: 0.75rem; bottom: auto; }
+.view-btn { width: 2.75rem; }
+.view-btn .icon { width: 1.35em; height: 1.35em; }
+.view-btn .icon-on,
+.view-btn[aria-pressed="true"] .icon-off { display: none; }
+.view-btn[aria-pressed="true"] .icon-on { display: block; }
+.view-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.view-chip { padding: 0 0.75rem; font-family: var(--mono); font-size: 0.875rem; }
+.view-btn:hover,
+.view-chip:hover { border-color: var(--accent); }
+
 .btn-primary {
   font: inherit;
   font-weight: 600;

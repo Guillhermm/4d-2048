@@ -15,6 +15,26 @@
 </head>
 <body>
 <div class="wrap">
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-move" viewBox="0 0 24 24">
+      <path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>
+    </symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24">
+      <path d="M19.5 12a7.5 7.5 0 11-2.2-5.3M19.5 4.5v4h-4"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <path d="M8 5.5v13l10.5-6.5z"/>
+    </symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24">
+      <path d="M9 5.5v13M15 5.5v13"/>
+    </symbol>
+    <symbol id="i-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7"/>
+      <circle cx="12" cy="12" r="1.2"/>
+      <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>
+    </symbol>
+  </svg>
+
   <header>
     <h1>2048 4D</h1>
     <p class="lede">The 2×2×2×2 board is the 16 vertices of a 4D hypercube. Each edge joins two neighboring cells, and its color shows the axis. To push the tiles, swipe the way an axis points on screen.</p>
@@ -31,6 +51,22 @@
     <section class="stage" aria-label="Board">
       <div class="canvas-box" id="canvasBox">
         <canvas id="board" role="img" aria-label="4D board projected on screen"></canvas>
+        <div class="view-controls view-controls-top">
+          <button type="button" id="autoRotate" class="view-btn" aria-pressed="false" aria-label="Rotate by itself" title="Rotate by itself">
+            <svg class="icon icon-off" aria-hidden="true"><use href="#i-play"/></svg>
+            <svg class="icon icon-on" aria-hidden="true"><use href="#i-pause"/></svg>
+          </button>
+          <button type="button" id="alignView" class="view-btn" aria-label="Reset view" title="Reset view">
+            <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>
+          </button>
+        </div>
+        <div class="view-controls">
+          <button type="button" id="rotateAxis" class="view-chip" hidden>→ w</button>
+          <button type="button" id="dragMode" class="view-btn" aria-pressed="false" aria-label="Turn the view by dragging" title="Turn the view by dragging">
+            <svg class="icon icon-off" aria-hidden="true"><use href="#i-move"/></svg>
+            <svg class="icon icon-on" aria-hidden="true"><use href="#i-rotate"/></svg>
+          </button>
+        </div>
         <div class="overlay" id="overlay" hidden>
           <div class="overlay-card" role="dialog" aria-labelledby="overlayTitle">
             <h2 id="overlayTitle"></h2>

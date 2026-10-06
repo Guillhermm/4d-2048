@@ -42,6 +42,8 @@ const state = {
   R: compassView(),
   // Off by default: a still view keeps the eight swipe directions 45° apart.
   autoRotate: false,
+  dragMode: "move",
+  rotateAxis: 3,
   anim: null,
   highlight: null,
   positions: [],
@@ -178,16 +180,24 @@ window.addEventListener("keydown", (e) => {
 
 let drag = null;
 box.addEventListener("pointerdown", (e) => {
-  if (e.target.closest(".overlay")) return;
-  drag = { x0: e.clientX, y0: e.clientY };
+  if (e.target.closest(".overlay, .view-controls")) return;
+  drag = { x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY };
   box.setPointerCapture(e.pointerId);
+});
+box.addEventListener("pointermove", (e) => {
+  if (!drag || state.dragMode !== "rotate") return;
+  const axis = state.rotateAxis;
+  rotate(state.R, 0, axis, (e.clientX - drag.x) * 0.01);
+  rotate(state.R, 1, axis, -(e.clientY - drag.y) * 0.01);
+  drag.x = e.clientX;
+  drag.y = e.clientY;
 });
 box.addEventListener("pointerup", (e) => {
   if (!drag) return;
   const dx = e.clientX - drag.x0;
   const dy = e.clientY - drag.y0;
   drag = null;
-  if (Math.hypot(dx, dy) < SWIPE_MIN_PX) return;
+  if (state.dragMode !== "move" || Math.hypot(dx, dy) < SWIPE_MIN_PX) return;
   // Screen y grows downward; board y grows upward.
   const chosen = directionFromSwipe([dx, -dy], swipeAxes());
   if (chosen) play(chosen.axis, chosen.dir);
@@ -223,6 +233,34 @@ const keyLabel = (axis, dir) => {
   return dir > 0 ? "D" : "A";
 };
 
+const updateViewControls = () => {
+  const rotating = state.dragMode === "rotate";
+  $("dragMode").setAttribute("aria-pressed", String(rotating));
+  $("autoRotate").setAttribute("aria-pressed", String(state.autoRotate));
+  const chip = $("rotateAxis");
+  const name = AXIS_NAMES[state.rotateAxis];
+  chip.hidden = !rotating;
+  chip.textContent = `→ ${name}`;
+  chip.setAttribute("aria-label", `Turning x and y toward ${name}`);
+  chip.title = `Turning x and y toward ${name}`;
+};
+
+$("dragMode").addEventListener("click", () => {
+  state.dragMode = state.dragMode === "move" ? "rotate" : "move";
+  updateViewControls();
+});
+$("rotateAxis").addEventListener("click", () => {
+  state.rotateAxis = state.rotateAxis === 3 ? 2 : 3;
+  updateViewControls();
+});
+$("autoRotate").addEventListener("click", () => {
+  state.autoRotate = !state.autoRotate;
+  updateViewControls();
+});
+$("alignView").addEventListener("click", () => {
+  state.R = compassView();
+  renderer.resetFit();
+});
 $("newGame").addEventListener("click", start);
 
 new ResizeObserver(() => renderer.resize()).observe(box);
