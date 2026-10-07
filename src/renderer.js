@@ -2,10 +2,12 @@ import { applyMatrix } from "./linalg.js";
 import { perspectiveScale, projectTo2D } from "./projection.js";
 import { cellCount } from "./game.js";
 import { cellPosition, screenAxes } from "./board.js";
+import { fitScale } from "./layout.js";
 
 const AXIS_LABELS = ["x", "y", "z", "w"];
 // The axis indicator is drawn around this point from the bottom-left corner, labels included.
 const INDICATOR_CENTER = 58;
+const INDICATOR_REACH = 54;
 
 const parseHex = (hex) => {
   const s = hex.replace("#", "");
@@ -79,7 +81,8 @@ export const createRenderer = (canvas, box) => {
   };
 
   // Positions in `tiles` are world coordinates; they are rotated and projected here.
-  const draw = ({ side, R, edges, tiles, highlight }) => {
+  // `obstacles` are rectangles in view pixels that the board must stay clear of.
+  const draw = ({ side, R, edges, tiles, highlight, obstacles = [] }) => {
     ctx.clearRect(0, 0, width, height);
     const tileHalf = 0.1;
     const cells = [];
@@ -93,7 +96,13 @@ export const createRenderer = (canvas, box) => {
       rx = Math.max(rx, Math.abs(screen[0]) + tileHalf * f);
       ry = Math.max(ry, Math.abs(screen[1]) + tileHalf * f);
     }
-    const target = { k: Math.min((width / 2 - 24) / rx, (height / 2 - 24) / ry), cx: width / 2, cy: height / 2 };
+    const indicator = {
+      x: INDICATOR_CENTER - INDICATOR_REACH,
+      y: height - INDICATOR_CENTER - INDICATOR_REACH,
+      w: 2 * INDICATOR_REACH,
+      h: 2 * INDICATOR_REACH,
+    };
+    const target = fitScale({ width, height, rx, ry, obstacles: [...obstacles, indicator] });
     const ease = (from, to) => from + (to - from) * 0.05;
     fit = fit == null ? target : { k: ease(fit.k, target.k), cx: ease(fit.cx, target.cx), cy: ease(fit.cy, target.cy) };
     const { k, cx, cy } = fit;

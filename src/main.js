@@ -150,6 +150,18 @@ const sceneTiles = (now) => {
 
 const swipeAxes = () => screenAxes(state.R).map((v) => (Math.hypot(v[0], v[1]) < MIN_AXIS_LENGTH ? [0, 0] : v));
 
+// The on-board buttons, in view pixels. Measured on resize and whenever the chip shows or hides.
+let controlRects = [];
+const measureControls = () => {
+  const origin = box.getBoundingClientRect();
+  controlRects = [...box.querySelectorAll(".view-controls")]
+    .filter((el) => !el.hidden)
+    .map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height };
+    });
+};
+
 let lastTime = performance.now();
 let frame = 0;
 const tick = (now) => {
@@ -166,6 +178,7 @@ const tick = (now) => {
     edges: state.edges,
     tiles: sceneTiles(now),
     highlight: state.highlight,
+    obstacles: controlRects,
   });
   requestAnimationFrame(tick);
 };
@@ -243,6 +256,7 @@ const updateViewControls = () => {
   chip.textContent = `→ ${name}`;
   chip.setAttribute("aria-label", `Turning x and y toward ${name}`);
   chip.title = `Turning x and y toward ${name}`;
+  measureControls();
 };
 
 $("dragMode").addEventListener("click", () => {
@@ -263,7 +277,10 @@ $("alignView").addEventListener("click", () => {
 });
 $("newGame").addEventListener("click", start);
 
-new ResizeObserver(() => renderer.resize()).observe(box);
+new ResizeObserver(() => {
+  renderer.resize();
+  measureControls();
+}).observe(box);
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => renderer.readColors());
 
 buildPad();
