@@ -9,6 +9,11 @@ const AXIS_LABELS = ["x", "y", "z", "w"];
 const INDICATOR_CENTER = 58;
 const INDICATOR_REACH = 54;
 
+const MIN_FONT_PX = 11;
+
+// Powers of two from 16384 up are shown in binary thousands: 16k, 32k, 64k, 128k.
+export const tileLabel = (value) => (value >= 16384 ? `${value / 1024}k` : String(value));
+
 const parseHex = (hex) => {
   const s = hex.replace("#", "");
   return [0, 2, 4].map((o) => parseInt(s.slice(o, o + 2), 16));
@@ -84,7 +89,7 @@ export const createRenderer = (canvas, box) => {
   // `obstacles` are rectangles in view pixels that the board must stay clear of.
   const draw = ({ side, R, edges, tiles, highlight, obstacles = [] }) => {
     ctx.clearRect(0, 0, width, height);
-    const tileHalf = 0.1;
+    const tileHalf = 0.11;
     const cells = [];
     let rx = 0;
     let ry = 0;
@@ -93,8 +98,8 @@ export const createRenderer = (canvas, box) => {
       const screen = projectTo2D(world);
       const f = perspectiveScale(world);
       cells.push({ screen, f });
-      rx = Math.max(rx, Math.abs(screen[0]) + tileHalf * f);
-      ry = Math.max(ry, Math.abs(screen[1]) + tileHalf * f);
+      rx = Math.max(rx, Math.abs(screen[0]) + tileHalf * Math.sqrt(f));
+      ry = Math.max(ry, Math.abs(screen[1]) + tileHalf * Math.sqrt(f));
     }
     const indicator = {
       x: INDICATOR_CENTER - INDICATOR_REACH,
@@ -144,20 +149,25 @@ export const createRenderer = (canvas, box) => {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     for (const t of placed) {
-      const size = baseSize * t.f * t.scale;
+      // The square root keeps depth readable without near tiles burying the ones behind them.
+      const size = baseSize * Math.sqrt(t.f) * t.scale;
       if (size < 1) continue;
       const [x, y] = at(t.screen);
       const { fill, ink } = tileColor(t.value);
-      const digits = String(t.value).length;
-      const fontScale = digits <= 2 ? 0.46 : digits === 3 ? 0.36 : 0.28;
+      const label = tileLabel(t.value);
+      const fontScale = label.length <= 2 ? 0.46 : label.length === 3 ? 0.38 : 0.3;
+      // Text never drops below a readable size; a tile too narrow for it grows wider instead.
+      const fontPx = Math.max(MIN_FONT_PX * t.scale, size * fontScale);
+      ctx.font = `600 ${Math.round(fontPx)}px 'IBM Plex Mono', monospace`;
+      const h = Math.max(size, fontPx * 1.5);
+      const w = Math.max(h, ctx.measureText(label).width + fontPx * 0.8);
       ctx.fillStyle = fill;
       ctx.beginPath();
-      if (ctx.roundRect) ctx.roundRect(x - size / 2, y - size / 2, size, size, size * 0.18);
-      else ctx.rect(x - size / 2, y - size / 2, size, size);
+      if (ctx.roundRect) ctx.roundRect(x - w / 2, y - h / 2, w, h, h * 0.18);
+      else ctx.rect(x - w / 2, y - h / 2, w, h);
       ctx.fill();
       ctx.fillStyle = ink;
-      ctx.font = `600 ${Math.round(size * fontScale)}px 'IBM Plex Mono', monospace`;
-      ctx.fillText(String(t.value), x, y + size * 0.02);
+      ctx.fillText(label, x, y + h * 0.02);
     }
 
     drawAxisIndicator(R, highlight);
