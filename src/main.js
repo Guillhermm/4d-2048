@@ -2,6 +2,7 @@ import { reorthonormalize, rotate } from "./linalg.js";
 import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
 import { cellPosition, compassView, gridEdges, screenAxes, swipeTolerances } from "./board.js";
 import { createRenderer } from "./renderer.js";
+import { DEFAULT_LANGUAGE, translate } from "./i18n.js";
 
 const AXIS_NAMES = ["x", "y", "z", "w"];
 const SLIDE_MS = 150;
@@ -32,6 +33,7 @@ const box = $("canvasBox");
 const renderer = createRenderer($("board"), box);
 
 const state = {
+  language: DEFAULT_LANGUAGE,
   // The engine handles any side; the game ships the 2×2×2×2 board only.
   side: 2,
   cells: null,
@@ -52,6 +54,8 @@ const state = {
   edges: [],
 };
 
+const t = (key, params) => translate(state.language, key, params);
+
 const start = () => {
   state.cells = newGame(state.side);
   state.score = 0;
@@ -70,7 +74,7 @@ const updateScores = () => {
   state.best = Math.max(state.best, state.score);
   $("score").textContent = String(state.score);
   $("best").textContent = String(state.best);
-  $("moveCount").textContent = state.moves === 1 ? "1 move" : `${state.moves} moves`;
+  $("moveCount").textContent = t("moves", { count: state.moves });
 };
 
 const setOverlay = (kind) => {
@@ -82,13 +86,13 @@ const setOverlay = (kind) => {
   }
   const primary = $("overlayPrimary");
   if (kind === "win") {
-    $("overlayTitle").textContent = "2048!";
-    $("overlayText").textContent = `You reached ${WIN_VALUE} in ${state.moves} moves on a 4D board.`;
-    primary.textContent = "Keep playing";
+    $("overlayTitle").textContent = t("winTitle");
+    $("overlayText").textContent = t("winText", { value: WIN_VALUE, moves: state.moves });
+    primary.textContent = t("keepPlaying");
   } else {
-    $("overlayTitle").textContent = "No moves left";
-    $("overlayText").textContent = `No axis has equal neighbors. Score: ${state.score}.`;
-    primary.textContent = "New game";
+    $("overlayTitle").textContent = t("overTitle");
+    $("overlayText").textContent = t("overText", { score: state.score });
+    primary.textContent = t("newGame");
   }
   const wasHidden = overlay.hidden;
   overlay.hidden = false;
@@ -162,7 +166,7 @@ const updateSwipeHint = () => {
           .filter((w) => w.degrees < MIN_SWIPE_TOLERANCE)
           .map((w) => `${w.dir > 0 ? "+" : "−"}${AXIS_NAMES[w.axis]}`)
       : [];
-  const text = weak.length ? `Swiping can't reliably reach ${weak.join(", ")} in this view. Use the buttons or reset the view.` : "";
+  const text = weak.length ? t("swipeWarning", { directions: weak.join(", ") }) : "";
   if (text === hintText) return;
   hintText = text;
   const hint = $("swipeHint");
@@ -241,6 +245,7 @@ box.addEventListener("pointercancel", () => {
   drag = null;
 });
 
+const padButtons = [];
 const buildPad = () => {
   const pad = $("pad");
   AXIS_NAMES.forEach((name, axis) => {
@@ -252,11 +257,10 @@ const buildPad = () => {
       const label = document.createElement("span");
       label.textContent = `${dir > 0 ? "+" : "−"}${name}`;
       const key = document.createElement("kbd");
-      key.textContent = keyLabel(axis, dir);
-      btn.setAttribute("aria-label", `Move toward ${label.textContent}`);
       btn.append(label, key);
       btn.addEventListener("click", () => play(axis, dir));
       pad.append(btn);
+      padButtons.push({ btn, key, axis, dir, name });
     }
   });
 };
@@ -264,8 +268,24 @@ const buildPad = () => {
 const keyLabel = (axis, dir) => {
   if (axis === 0) return dir > 0 ? "→" : "←";
   if (axis === 1) return dir > 0 ? "↑" : "↓";
-  if (axis === 2) return dir > 0 ? "W" : "S";
-  return dir > 0 ? "D" : "A";
+  const keys = t("keys");
+  return keys[`${AXIS_NAMES[axis]}${dir > 0 ? "Plus" : "Minus"}`];
+};
+
+const applyLanguage = () => {
+  document.documentElement.lang = state.language;
+  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
+  for (const el of document.querySelectorAll("[data-i18n-aria]")) el.setAttribute("aria-label", t(el.dataset.i18nAria));
+  for (const el of document.querySelectorAll("[data-i18n-title]")) el.title = t(el.dataset.i18nTitle);
+  for (const { btn, key, axis, dir, name } of padButtons) {
+    btn.setAttribute("aria-label", t("moveToward", { direction: `${dir > 0 ? "+" : "−"}${name}` }));
+    key.textContent = keyLabel(axis, dir);
+  }
+  updateScores();
+  updateViewControls();
+  hintText = "";
+  updateSwipeHint();
+  if (state.overlay) setOverlay(state.overlay);
 };
 
 const updateViewControls = () => {
@@ -276,8 +296,8 @@ const updateViewControls = () => {
   const name = AXIS_NAMES[state.rotateAxis];
   chip.hidden = !rotating;
   chip.textContent = `→ ${name}`;
-  chip.setAttribute("aria-label", `Turning x and y toward ${name}`);
-  chip.title = `Turning x and y toward ${name}`;
+  chip.setAttribute("aria-label", t("rotateAxis", { axis: name }));
+  chip.title = t("rotateAxis", { axis: name });
   measureControls();
 };
 
@@ -309,4 +329,5 @@ buildPad();
 renderer.readColors();
 renderer.resize();
 start();
+applyLanguage();
 requestAnimationFrame(tick);

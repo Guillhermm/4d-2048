@@ -37,33 +37,33 @@
 
   <header>
     <h1>2048 4D</h1>
-    <p class="lede">The 2×2×2×2 board is the 16 vertices of a 4D hypercube. Each edge joins two neighboring cells, and its color shows the axis. To push the tiles, swipe the way an axis points on screen.</p>
+    <p class="lede" data-i18n="lede"></p>
   </header>
 
   <div class="layout">
-    <section class="scorebar" aria-label="Score">
-      <div class="score-box"><span class="label">Score</span><output id="score">0</output></div>
-      <div class="score-box"><span class="label">Best</span><output id="best">0</output></div>
-      <button type="button" id="newGame" class="btn-primary">New game</button>
+    <section class="scorebar" data-i18n-aria="score" aria-label="Score">
+      <div class="score-box"><span class="label" data-i18n="score">Score</span><output id="score">0</output></div>
+      <div class="score-box"><span class="label" data-i18n="best">Best</span><output id="best">0</output></div>
+      <button type="button" id="newGame" class="btn-primary" data-i18n="newGame">New game</button>
       <span class="move-count" id="moveCount"></span>
     </section>
 
-    <section class="stage" aria-label="Board">
+    <section class="stage" data-i18n-aria="boardRegion" aria-label="Board">
       <div class="canvas-box" id="canvasBox">
-        <canvas id="board" role="img" aria-label="4D board projected on screen"></canvas>
+        <canvas id="board" role="img" data-i18n-aria="canvasLabel" aria-label="4D board projected on screen"></canvas>
         <div class="view-controls view-hint" id="swipeHint" role="status" hidden></div>
         <div class="view-controls view-controls-top">
-          <button type="button" id="autoRotate" class="view-btn" aria-pressed="false" aria-label="Rotate by itself" title="Rotate by itself">
+          <button type="button" id="autoRotate" class="view-btn" aria-pressed="false" data-i18n-aria="autoRotate" data-i18n-title="autoRotate" aria-label="Rotate by itself" title="Rotate by itself">
             <svg class="icon icon-off" aria-hidden="true"><use href="#i-play"/></svg>
             <svg class="icon icon-on" aria-hidden="true"><use href="#i-pause"/></svg>
           </button>
-          <button type="button" id="alignView" class="view-btn" aria-label="Reset view" title="Reset view">
+          <button type="button" id="alignView" class="view-btn" data-i18n-aria="alignView" data-i18n-title="alignView" aria-label="Reset view" title="Reset view">
             <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>
           </button>
         </div>
         <div class="view-controls">
           <button type="button" id="rotateAxis" class="view-chip" hidden>→ w</button>
-          <button type="button" id="dragMode" class="view-btn" aria-pressed="false" aria-label="Turn the view by dragging" title="Turn the view by dragging">
+          <button type="button" id="dragMode" class="view-btn" aria-pressed="false" data-i18n-aria="rotateMode" data-i18n-title="rotateMode" aria-label="Turn the view by dragging" title="Turn the view by dragging">
             <svg class="icon icon-off" aria-hidden="true"><use href="#i-move"/></svg>
             <svg class="icon icon-on" aria-hidden="true"><use href="#i-rotate"/></svg>
           </button>
@@ -76,19 +76,19 @@
           </div>
         </div>
       </div>
-      <p class="caption">The axis indicator in the corner shows where each axis points right now. Tiles only merge along an edge, so two equal tiles on opposite corners of a face never meet in a single move.</p>
+      <p class="caption" data-i18n="caption"></p>
     </section>
 
-    <aside class="panel" aria-label="Controls">
+    <aside class="panel" data-i18n-aria="controlsRegion" aria-label="Controls">
       <div class="group">
-        <span class="label" id="padLabel">Move along an axis</span>
+        <span class="label" id="padLabel" data-i18n="padLabel">Move along an axis</span>
         <div class="pad" id="pad" role="group" aria-labelledby="padLabel"></div>
-        <p class="hint">Keyboard: arrows for x and y, W/S for z, A/D for w.</p>
+        <p class="hint" data-i18n="keyboardHint"></p>
       </div>
 
       <div class="board-info">
-        <span class="label">Board</span>
-        <span class="board-size">2⁴ · 16 cells</span>
+        <span class="label" data-i18n="boardLabel">Board</span>
+        <span class="board-size" data-i18n="size2">2⁴ · 16 cells</span>
       </div>
     </aside>
   </div>
