@@ -1,6 +1,6 @@
 import { reorthonormalize, rotate } from "./linalg.js";
 import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
-import { cellPosition, compassView, gridEdges, screenAxes } from "./board.js";
+import { cellPosition, compassView, gridEdges, screenAxes, swipeTolerances } from "./board.js";
 import { createRenderer } from "./renderer.js";
 
 const AXIS_NAMES = ["x", "y", "z", "w"];
@@ -9,6 +9,8 @@ const POP_MS = 170;
 const SWIPE_MIN_PX = 24;
 // An axis pointing almost straight into the screen can't be picked by a swipe.
 const MIN_AXIS_LENGTH = 0.12;
+// A swipe aimed at an arrow may stray this many degrees either way before it is warned about.
+const MIN_SWIPE_TOLERANCE = 8;
 const AUTO_ROTATION = [
   [0, 3, 0.1],
   [1, 2, 0.06],
@@ -150,6 +152,25 @@ const sceneTiles = (now) => {
 
 const swipeAxes = () => screenAxes(state.R).map((v) => (Math.hypot(v[0], v[1]) < MIN_AXIS_LENGTH ? [0, 0] : v));
 
+let hintText = "";
+const updateSwipeHint = () => {
+  // While the board turns by itself the weak directions change every second, so a warning
+  // would flicker; it is only shown for a still view.
+  const weak =
+    state.dragMode === "move" && !state.autoRotate
+      ? swipeTolerances(swipeAxes())
+          .filter((w) => w.degrees < MIN_SWIPE_TOLERANCE)
+          .map((w) => `${w.dir > 0 ? "+" : "−"}${AXIS_NAMES[w.axis]}`)
+      : [];
+  const text = weak.length ? `Swiping can't reliably reach ${weak.join(", ")} in this view. Use the buttons or reset the view.` : "";
+  if (text === hintText) return;
+  hintText = text;
+  const hint = $("swipeHint");
+  hint.textContent = text;
+  hint.hidden = !text;
+  measureControls();
+};
+
 // The on-board buttons, in view pixels. Measured on resize and whenever the chip shows or hides.
 let controlRects = [];
 const measureControls = () => {
@@ -172,6 +193,7 @@ const tick = (now) => {
   }
   if (++frame % 120 === 0) reorthonormalize(state.R);
   if (state.highlight && now > state.highlight.until) state.highlight = null;
+  updateSwipeHint();
   renderer.draw({
     side: state.side,
     R: state.R,

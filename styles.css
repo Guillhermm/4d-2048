@@ -207,6 +207,21 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .board-info { display: flex; align-items: baseline; justify-content: space-between; gap: 0.625rem; }
 .board-size { font-family: var(--mono); font-size: 0.875rem; }
 
+.view-controls.view-hint {
+  left: 0.75rem;
+  top: 0.75rem;
+  right: auto;
+  bottom: auto;
+  max-width: min(16.25rem, calc(100% - 8.75rem));
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.78125rem;
+  line-height: 1.4;
+}
+
 .pad { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.375rem; }
 
 .pad-btn {

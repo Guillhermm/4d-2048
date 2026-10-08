@@ -41,3 +41,24 @@ export const compassView = () => {
   }
   return rows;
 };
+
+// For each signed axis, how far a swipe aimed exactly along its arrow can stray before another
+// direction wins: half the angle to the nearest other arrow, in degrees. An axis whose vector is
+// zero (seen end-on) gets 0. Entries are ordered +x, -x, +y, -y, ...
+export const swipeTolerances = (axisVectors) => {
+  const arrows = [];
+  axisVectors.forEach((v, axis) => {
+    for (const dir of [1, -1]) arrows.push({ axis, dir, x: v[0] * dir, y: v[1] * dir });
+  });
+  const live = arrows.filter((a) => Math.hypot(a.x, a.y) > 1e-6);
+  return arrows.map((a) => {
+    if (Math.hypot(a.x, a.y) <= 1e-6) return { axis: a.axis, dir: a.dir, degrees: 0 };
+    let nearest = 180;
+    for (const b of live) {
+      if (b === a) continue;
+      const cos = (a.x * b.x + a.y * b.y) / (Math.hypot(a.x, a.y) * Math.hypot(b.x, b.y));
+      nearest = Math.min(nearest, (Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI);
+    }
+    return { axis: a.axis, dir: a.dir, degrees: nearest / 2 };
+  });
+};

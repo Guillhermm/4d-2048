@@ -40,3 +40,22 @@ test("in the compass view the 16 cells land on distinct screen points", () => {
   }
   assert.equal(seen.size, 16);
 });
+
+test("in the compass view a swipe can stray 22.5° either way", async () => {
+  const { swipeTolerances } = await import("../src/board.js");
+  const tolerances = swipeTolerances(screenAxes(compassView()));
+  assert.equal(tolerances.length, 8);
+  for (const t of tolerances) assert.ok(Math.abs(t.degrees - 22.5) < 1e-9, `${t.axis}${t.dir} ${t.degrees}`);
+});
+
+test("an axis seen end-on has no tolerance, and nearly parallel arrows have little", async () => {
+  const { swipeTolerances } = await import("../src/board.js");
+  const a = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+  const tolerances = swipeTolerances([a(0), a(90), a(40), [0, 0]]);
+  const of = (axis, dir) => tolerances.find((t) => t.axis === axis && t.dir === dir).degrees;
+  assert.equal(of(3, 1), 0);
+  assert.equal(of(3, -1), 0);
+  const close = swipeTolerances([a(0), a(90), a(40), a(46)]);
+  const tol = (axis) => close.find((t) => t.axis === axis && t.dir === 1).degrees;
+  assert.ok(Math.abs(tol(2) - 3) < 1e-9 && Math.abs(tol(3) - 3) < 1e-9);
+});
