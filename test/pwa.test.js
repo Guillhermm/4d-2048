@@ -77,6 +77,11 @@ test("the head carries description, canonical, Open Graph and Twitter tags", () 
   assert.equal(meta("name", "twitter:card"), "summary_large_image");
 });
 
+// Search Console rechecks this token periodically; losing it drops ownership of the property.
+test("the Search Console verification tag is present", () => {
+  assert.equal(meta("name", "google-site-verification"), "IMB4bqRBXLrR92ODWWzF0c8qv-83lzgZZW2WHXw-ZCA");
+});
+
 test("theme-color metas cover light and dark, and the manifest is linked", () => {
   assert.match(html, /content="#eef1f5" media="\(prefers-color-scheme: light\)"/);
   assert.match(html, /content="#0f141b" media="\(prefers-color-scheme: dark\)"/);
