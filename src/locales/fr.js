@@ -9,7 +9,7 @@ export default {
     moves: ({ count }) => (count <= 1 ? `${count} coup` : `${count} coups`),
     padLabel: "Déplacer le long d'un axe",
     keyboardHint: "Clavier : flèches pour x et y, Z/S pour z, Q/D pour w.",
-    keys: { zMinus: "S", zPlus: "Z", wMinus: "Q", wPlus: "D" },
+    keys: { zMinus: "S", zPlus: "Z", wMinus: "D", wPlus: "Q" },
     boardLabel: "Plateau",
     size2: "2⁴ · 16 cases",
     rotateMode: "Faire tourner la vue en glissant",

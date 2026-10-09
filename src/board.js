@@ -42,6 +42,20 @@ export const compassView = () => {
   return rows;
 };
 
+// event.code is the physical key, so these stay put on AZERTY and QWERTZ layouts. Each key sits
+// on the side of its pair that the move points to in the compass view: +w runs up and to the
+// left there, so it is A, the left-hand key.
+export const KEYS = {
+  ArrowLeft: [0, -1],
+  ArrowRight: [0, 1],
+  ArrowDown: [1, -1],
+  ArrowUp: [1, 1],
+  KeyS: [2, -1],
+  KeyW: [2, 1],
+  KeyA: [3, 1],
+  KeyD: [3, -1],
+};
+
 // For each signed axis, how far a swipe aimed exactly along its arrow can stray before another
 // direction wins: half the angle to the nearest other arrow, in degrees. An axis whose vector is
 // zero (seen end-on) gets 0. Entries are ordered +x, -x, +y, -y, ...

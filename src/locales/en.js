@@ -8,7 +8,7 @@ export default {
     moves: ({ count }) => (count === 1 ? "1 move" : `${count} moves`),
     padLabel: "Move along an axis",
     keyboardHint: "Keyboard: arrows for x and y, W/S for z, A/D for w.",
-    keys: { zMinus: "S", zPlus: "W", wMinus: "A", wPlus: "D" },
+    keys: { zMinus: "S", zPlus: "W", wMinus: "D", wPlus: "A" },
     boardLabel: "Board",
     size2: "2⁴ · 16 cells",
     rotateMode: "Turn the view by dragging",

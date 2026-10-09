@@ -1,6 +1,6 @@
 import { reorthonormalize, rotate } from "./linalg.js";
 import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
-import { cellPosition, compassView, gridEdges, screenAxes, swipeTolerances } from "./board.js";
+import { cellPosition, compassView, gridEdges, KEYS, screenAxes, swipeTolerances } from "./board.js";
 import { createRenderer } from "./renderer.js";
 import { DEFAULT_LANGUAGE, languages, translateOr } from "./i18n.js";
 import { browserStorage, loadPreferences, savePreferences } from "./preferences.js";
@@ -18,18 +18,6 @@ const AUTO_ROTATION = [
   [0, 3, 0.1],
   [1, 2, 0.06],
 ];
-// event.code is the physical key, so these stay put on AZERTY and QWERTZ layouts.
-const KEYS = {
-  ArrowLeft: [0, -1],
-  ArrowRight: [0, 1],
-  ArrowDown: [1, -1],
-  ArrowUp: [1, 1],
-  KeyS: [2, -1],
-  KeyW: [2, 1],
-  KeyA: [3, -1],
-  KeyD: [3, 1],
-};
-
 const $ = (id) => document.getElementById(id);
 const box = $("canvasBox");
 const renderer = createRenderer($("board"), box);

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { norm } from "../src/linalg.js";
 import { cellCount } from "../src/game.js";
-import { cellPosition, compassView, gridEdges, screenAxes } from "../src/board.js";
+import { cellPosition, compassView, gridEdges, KEYS, screenAxes } from "../src/board.js";
 
 test("the side-2 board is the tesseract with circumradius 1", () => {
   for (let i = 0; i < cellCount(2); i++) assert.ok(Math.abs(norm(cellPosition(i, 2)) - 1) < 1e-12);
@@ -58,4 +58,14 @@ test("an axis seen end-on has no tolerance, and nearly parallel arrows have litt
   const close = swipeTolerances([a(0), a(90), a(40), a(46)]);
   const tol = (axis) => close.find((t) => t.axis === axis && t.dir === 1).degrees;
   assert.ok(Math.abs(tol(2) - 3) < 1e-9 && Math.abs(tol(3) - 3) < 1e-9);
+});
+
+test("in the compass view every key moves tiles toward its own side of the keyboard", () => {
+  const axes = screenAxes(compassView());
+  const side = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowDown: [0, -1], ArrowUp: [0, 1], KeyS: [0, -1], KeyW: [0, 1], KeyA: [-1, 0], KeyD: [1, 0] };
+  assert.deepEqual(Object.keys(KEYS).sort(), Object.keys(side).sort());
+  for (const [code, [axis, dir]] of Object.entries(KEYS)) {
+    const along = (axes[axis][0] * side[code][0] + axes[axis][1] * side[code][1]) * dir;
+    assert.ok(along > 0.1, `${code} ${along}`);
+  }
 });

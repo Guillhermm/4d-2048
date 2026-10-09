@@ -8,7 +8,7 @@ export default {
     moves: ({ count }) => (count === 1 ? "1 jogada" : `${count} jogadas`),
     padLabel: "Mover ao longo de um eixo",
     keyboardHint: "Teclado: setas para x e y, W/S para z, A/D para w.",
-    keys: { zMinus: "S", zPlus: "W", wMinus: "A", wPlus: "D" },
+    keys: { zMinus: "S", zPlus: "W", wMinus: "D", wPlus: "A" },
     boardLabel: "Tabuleiro",
     size2: "2⁴ · 16 casas",
     rotateMode: "Girar a vista ao arrastar",

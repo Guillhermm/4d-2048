@@ -33,6 +33,9 @@ for (const code of languages()) {
       assert.ok(text.includes(String(count)), text);
     }
     assert.deepEqual(Object.keys(translate(code, "keys")).sort(), ["wMinus", "wPlus", "zMinus", "zPlus"]);
+    // S and D sit in the same place on QWERTY, QWERTZ and AZERTY, so every locale agrees on them.
+    assert.equal(translate(code, "keys").zMinus, "S");
+    assert.equal(translate(code, "keys").wMinus, "D");
   });
 }
 

@@ -8,7 +8,7 @@ export default {
     moves: ({ count }) => (count === 1 ? "1 Zug" : `${count} Züge`),
     padLabel: "Entlang einer Achse bewegen",
     keyboardHint: "Tastatur: Pfeiltasten für x und y, W/S für z, A/D für w.",
-    keys: { zMinus: "S", zPlus: "W", wMinus: "A", wPlus: "D" },
+    keys: { zMinus: "S", zPlus: "W", wMinus: "D", wPlus: "A" },
     boardLabel: "Spielfeld",
     size2: "2⁴ · 16 Felder",
     rotateMode: "Ansicht durch Ziehen drehen",
