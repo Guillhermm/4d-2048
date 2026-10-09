@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><title>2048 4D</title><rect width="512" height="512" fill="#0f141b"/>
+<line x1="124.0" y1="124.0" x2="202.0" y2="202.0" stroke="#ff6f9f" stroke-width="13.6" stroke-linecap="round"/>
+<line x1="124.0" y1="388.0" x2="202.0" y2="310.0" stroke="#ff6f9f" stroke-width="13.6" stroke-linecap="round"/>
+<line x1="388.0" y1="124.0" x2="310.0" y2="202.0" stroke="#ff6f9f" stroke-width="13.6" stroke-linecap="round"/>
+<line x1="388.0" y1="388.0" x2="310.0" y2="310.0" stroke="#ff6f9f" stroke-width="13.6" stroke-linecap="round"/>
+<rect x="202.0" y="202.0" width="108.0" height="108.0" rx="6.8" fill="#f0d7a1"/>
+<rect x="202.0" y="202.0" width="108.0" height="108.0" rx="6.8" fill="none" stroke="#e3b04b" stroke-width="17.0" stroke-linejoin="round"/>
+<line x1="124.0" y1="124.0" x2="388.0" y2="124.0" stroke="#7d9cf0" stroke-width="17.0" stroke-linecap="round"/>
+<line x1="124.0" y1="388.0" x2="388.0" y2="388.0" stroke="#7d9cf0" stroke-width="17.0" stroke-linecap="round"/>
+<line x1="124.0" y1="124.0" x2="124.0" y2="388.0" stroke="#3fc4b2" stroke-width="17.0" stroke-linecap="round"/>
+<line x1="388.0" y1="124.0" x2="388.0" y2="388.0" stroke="#3fc4b2" stroke-width="17.0" stroke-linecap="round"/>
+<circle cx="124.0" cy="124.0" r="12.8" fill="#0f141b" stroke="#e6ebf2" stroke-width="5.1"/>
+<circle cx="124.0" cy="388.0" r="12.8" fill="#0f141b" stroke="#e6ebf2" stroke-width="5.1"/>
+<circle cx="388.0" cy="124.0" r="12.8" fill="#0f141b" stroke="#e6ebf2" stroke-width="5.1"/>
+<circle cx="388.0" cy="388.0" r="12.8" fill="#0f141b" stroke="#e6ebf2" stroke-width="5.1"/>
+</svg>

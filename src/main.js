@@ -364,3 +364,8 @@ renderer.resize();
 start();
 applyLanguage();
 requestAnimationFrame(tick);
+
+// Offline support is an extra: a failed registration must never touch the game.
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}

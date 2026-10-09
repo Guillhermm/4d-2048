@@ -1,0 +1,40 @@
+{
+  "id": "./",
+  "name": "2048 4D",
+  "short_name": "2048 4D",
+  "description": "2048 on a real 4D board: the 16 vertices of a tesseract, drawn in perspective. Swipe along an axis to slide and merge tiles. Free, runs in the browser and works offline.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f141b",
+  "theme_color": "#0f141b",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

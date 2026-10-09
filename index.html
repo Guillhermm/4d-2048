@@ -3,14 +3,56 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>2048 4D</title>
 <script src="src/theme-boot.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="icon" href="data:,">
+<meta name="description" content="2048 on a real 4D board: the 16 vertices of a tesseract, drawn in perspective. Swipe along an axis to slide and merge tiles. Free, runs in the browser and works offline.">
+<link rel="canonical" href="https://guillhermm.github.io/4d-2048/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="2048 4D">
+<meta property="og:title" content="2048 4D">
+<meta property="og:description" content="2048 on a real 4D board: the 16 vertices of a tesseract, drawn in perspective. Swipe along an axis to slide and merge tiles. Free, runs in the browser and works offline.">
+<meta property="og:url" content="https://guillhermm.github.io/4d-2048/">
+<meta property="og:image" content="https://guillhermm.github.io/4d-2048/icons/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The 2048 4D title and a tesseract drawn with its edges colored by axis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f141b" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "2048 4D",
+  "description": "2048 on a real 4D board: the 16 vertices of a tesseract, drawn in perspective. Swipe along an axis to slide and merge tiles. Free, runs in the browser and works offline.",
+  "url": "https://guillhermm.github.io/4d-2048/",
+  "image": "https://guillhermm.github.io/4d-2048/icons/og-image.png",
+  "genre": [
+    "Puzzle"
+  ],
+  "gamePlatform": "Web browser",
+  "applicationCategory": "Game",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "inLanguage": [
+    "en",
+    "pt-BR",
+    "es",
+    "fr",
+    "de"
+  ]
+}
+</script>
 <link rel="stylesheet" href="styles.css">
 <script type="module" src="src/main.js"></script>
 </head>
@@ -50,7 +92,7 @@
         <svg class="icon" aria-hidden="true"><use href="#i-gear"/></svg>
       </button>
     </div>
-    <p class="lede" data-i18n="lede"></p>
+    <p class="lede" data-i18n="lede">The 2×2×2×2 board is the 16 vertices of a 4D hypercube. Each edge joins two neighboring cells, and its color shows the axis. To push the tiles, swipe the way an axis points on screen.</p>
   </header>
 
   <div class="layout">
@@ -89,14 +131,14 @@
           </div>
         </div>
       </div>
-      <p class="caption" data-i18n="caption"></p>
+      <p class="caption" data-i18n="caption">The axis indicator in the corner shows where each axis points right now. Tiles only merge along an edge, so two equal tiles on opposite corners of a face never meet in a single move.</p>
     </section>
 
     <aside class="panel" data-i18n-aria="controlsRegion" aria-label="Controls">
       <div class="group">
         <span class="label" id="padLabel" data-i18n="padLabel">Move along an axis</span>
         <div class="pad" id="pad" role="group" aria-labelledby="padLabel"></div>
-        <p class="hint" data-i18n="keyboardHint"></p>
+        <p class="hint" data-i18n="keyboardHint">Keyboard: arrows for x and y, W/S for z, A/D for w.</p>
       </div>
 
       <div class="board-info">
@@ -120,7 +162,7 @@
       <h3 class="settings-group-title" id="languageTitle" data-i18n="language">Language</h3>
       <ul class="settings-options" id="languageOptions" role="radiogroup" aria-labelledby="languageTitle"></ul>
     </section>
-    <p class="settings-note" data-i18n="settingsNote"></p>
+    <p class="settings-note" data-i18n="settingsNote">Settings are saved on this device.</p>
   </div>
 </dialog>
 </body>

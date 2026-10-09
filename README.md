@@ -51,9 +51,24 @@ npm run serve        # http://127.0.0.1:8000
 ## Deploying
 
 `.github/workflows/pages.yml` publishes to GitHub Pages on every push to `main`: it runs the
-tests, copies `index.html`, `styles.css` and `src/` into the site, and deploys that. Nothing else
-in the repository is published. In the repository settings, Pages must have its source set to
+tests, copies `index.html`, `styles.css`, `manifest.webmanifest`, `sw.js`, `sitemap.xml`, `src/`,
+`icons/` and `fonts/` into the site, and deploys that. Nothing else in the repository is published. In the repository settings, Pages must have its source set to
 GitHub Actions.
+
+## Install, offline and search
+
+The page is an installable Progressive Web App: `manifest.webmanifest` describes it and `sw.js`
+is a service worker that fetches from the network first and falls back to a precached copy of
+every file the page needs, so the game opens offline. Bump `CACHE` in `sw.js` only if the cache
+layout changes; `test/pwa.test.js` fails when the precache list and the published files differ.
+Fonts are self-hosted in `fonts/`, so the page makes no third-party requests: Familjen Grotesk
+and IBM Plex Sans are variable fonts, one file each, and IBM Plex Mono is three static weights.
+`fonts/OFL.txt` is their license; it is published with them but not precached.
+
+For search and link previews, `index.html` carries a description, canonical URL, Open Graph and
+Twitter tags, and `VideoGame` structured data (JSON-LD), and the intro text is in the static HTML
+in English, so crawlers see it without running scripts. `sitemap.xml` lists the one page; there
+is no `robots.txt` because it is only read at a host root, which a project subpath does not own.
 
 ## Tests
 
@@ -65,8 +80,9 @@ npm test
 spawning, picking an axis from a swipe, the board geometry and the default view, fitting the
 board around the on-board buttons, projection,
 rotation, every translation (same keys and placeholders as English), and loading saved
-preferences, including corrupt or hostile values, and that every file the page loads is in the published
-site under a relative path.
+preferences, including corrupt or hostile values, that every file the page and stylesheet load is in
+the published site under a relative path, the manifest, the icon sizes, the service worker precache
+list, and the search tags in the page head.
 
 ## Layout
 
