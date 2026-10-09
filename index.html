@@ -102,6 +102,10 @@
       <div class="score-box"><span class="label" data-i18n="best">Best</span><output id="best">0</output></div>
       <button type="button" id="newGame" class="btn-primary" data-i18n="newGame">New game</button>
       <span class="move-count" id="moveCount"></span>
+      <div class="over-row">
+        <span id="overBadge" class="over-badge" aria-live="polite" data-i18n="overBadge" hidden>Game over</span>
+        <button type="button" id="reopenOver" class="btn-link" data-i18n="reopenResult" hidden>Result</button>
+      </div>
     </section>
 
     <section class="stage" data-i18n-aria="boardRegion" aria-label="Board">
@@ -128,7 +132,10 @@
           <div class="overlay-card" role="dialog" aria-labelledby="overlayTitle">
             <h2 id="overlayTitle"></h2>
             <p id="overlayText"></p>
-            <button type="button" id="overlayPrimary"></button>
+            <div class="overlay-actions">
+              <button type="button" id="overlayPrimary"></button>
+              <button type="button" id="overlayDismiss" class="overlay-secondary" data-i18n="seeBoard" hidden>See board</button>
+            </div>
           </div>
         </div>
       </div>
@@ -164,6 +171,7 @@
       <ul class="settings-options" id="languageOptions" role="radiogroup" aria-labelledby="languageTitle"></ul>
     </section>
     <p class="settings-note" data-i18n="settingsNote">Settings are saved on this device.</p>
+    <p class="settings-credit"><span data-i18n="madeBy">Made by</span> <a href="https://github.com/Guillhermm" target="_blank" rel="noopener noreferrer" data-i18n-aria="madeByOpens" aria-label="Guilherme Almeida Zeni, GitHub profile (opens in a new tab)">Guilherme Almeida Zeni</a></p>
   </div>
 </dialog>
 </body>

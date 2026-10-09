@@ -40,6 +40,18 @@ the default, with Brazilian Portuguese, Spanish, French and German, each listed 
 language. Both choices are saved in `localStorage`, together with the best score.
 Without storage (a private window, for example) the game still works and saves nothing.
 
+The game itself is saved after every move and new game, under the same key, and comes back on
+reload: board, score, moves and whether the 2048 card was already shown. A saved game that fails
+validation (wrong cell count, a tile that is not a power of two, a bad score) is dropped whole.
+Settings also carry a link to the author's GitHub profile.
+
+## Game over
+
+When no move is left, a card shows the result with New game and See board. See board (or Escape)
+closes it so the final position can be looked at; the score card then shows a Game over badge and a
+Result button that brings the card back. A finished game restores from a reload in that state,
+without the card. On a win, Escape is the same as Keep playing.
+
 ## Running
 
 ES modules do not load from `file://`, so serve the folder:
@@ -80,7 +92,7 @@ npm test
 spawning, picking an axis from a swipe, the board geometry and the default view, fitting the
 board around the on-board buttons, projection,
 rotation, every translation (same keys and placeholders as English), and loading saved
-preferences, including corrupt or hostile values, that every file the page and stylesheet load is in
+preferences and games, including corrupt or hostile values, that every file the page and stylesheet load is in
 the published site under a relative path, the manifest, the icon sizes, the service worker precache
 list, and the search tags in the page head.
 

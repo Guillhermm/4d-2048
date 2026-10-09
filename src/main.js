@@ -61,18 +61,32 @@ const t = (key, params) => translate(state.language, key, params);
 
 const best = () => prefs.best[state.side] ?? 0;
 
-const start = () => {
-  state.cells = newGame(state.side);
-  state.score = 0;
-  state.moves = 0;
-  state.won = false;
-  state.over = false;
+const saveGame = () => {
+  const { side, cells, score, moves, won, over } = state;
+  prefs.game = { side, cells: [...cells], score, moves, won, over };
+  savePreferences(storage, prefs);
+};
+
+const updateOverUi = () => {
+  $("overBadge").hidden = !state.over;
+  $("reopenOver").hidden = !state.over;
+};
+
+// `saved` is a validated game from storage; a finished one comes back dismissed, with no overlay.
+const start = (saved = null) => {
+  state.cells = saved ? saved.cells : newGame(state.side);
+  state.score = saved?.score ?? 0;
+  state.moves = saved?.moves ?? 0;
+  state.won = saved?.won ?? false;
+  state.over = saved?.over ?? false;
   state.anim = null;
   state.positions = Array.from({ length: cellCount(state.side) }, (_, i) => cellPosition(i, state.side));
   state.edges = gridEdges(state.side);
   renderer.resetFit();
   setOverlay(null);
+  updateOverUi();
   updateScores();
+  saveGame();
 };
 
 const updateScores = () => {
@@ -93,6 +107,7 @@ const setOverlay = (kind) => {
     return;
   }
   const primary = $("overlayPrimary");
+  $("overlayDismiss").hidden = kind === "win";
   if (kind === "win") {
     $("overlayTitle").textContent = t("winTitle");
     $("overlayText").textContent = t("winText", { value: WIN_VALUE, moves: state.moves });
@@ -107,10 +122,29 @@ const setOverlay = (kind) => {
   if (wasHidden) primary.focus();
 };
 
+const keepPlaying = () => {
+  setOverlay(null);
+  // A win on the last free move can leave no moves; the game-over card follows.
+  if (state.over) setOverlay("over");
+  else $("newGame").focus();
+};
+
 $("overlayPrimary").addEventListener("click", () => {
-  if (state.overlay === "win") setOverlay(null);
+  if (state.overlay === "win") keepPlaying();
   else start();
 });
+
+const dismissOverlay = () => {
+  if (state.overlay === "win") {
+    keepPlaying();
+    return;
+  }
+  setOverlay(null);
+  $("newGame").focus();
+};
+
+$("overlayDismiss").addEventListener("click", dismissOverlay);
+$("reopenOver").addEventListener("click", () => setOverlay("over"));
 
 const play = (axis, dir) => {
   if (state.over || state.overlay) return;
@@ -127,12 +161,15 @@ const play = (axis, dir) => {
     merged: new Set(result.merges.map((m) => m.at)),
     spawned,
   };
+  state.over = !canMove(state.cells, state.side);
+  const justWon = !state.won && result.merges.some((m) => m.value >= WIN_VALUE);
+  if (justWon) state.won = true;
   updateScores();
-  if (!state.won && result.merges.some((m) => m.value >= WIN_VALUE)) {
-    state.won = true;
+  updateOverUi();
+  saveGame();
+  if (justWon) {
     setOverlay("win");
-  } else if (!canMove(state.cells, state.side)) {
-    state.over = true;
+  } else if (state.over) {
     setOverlay("over");
   }
 };
@@ -219,6 +256,10 @@ const tick = (now) => {
 
 window.addEventListener("keydown", (e) => {
   if ($("settings").open) return;
+  if (e.code === "Escape" && state.overlay) {
+    dismissOverlay();
+    return;
+  }
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
   const mapped = KEYS[e.code];
   if (!mapped) return;
@@ -346,7 +387,7 @@ $("alignView").addEventListener("click", () => {
   state.R = compassView();
   renderer.resetFit();
 });
-$("newGame").addEventListener("click", start);
+$("newGame").addEventListener("click", () => start());
 
 new ResizeObserver(() => {
   renderer.resize();
@@ -361,7 +402,7 @@ new MutationObserver(() => renderer.readColors()).observe(document.documentEleme
 buildPad();
 renderer.readColors();
 renderer.resize();
-start();
+start(prefs.game);
 applyLanguage();
 requestAnimationFrame(tick);
 

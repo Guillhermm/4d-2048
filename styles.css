@@ -337,15 +337,27 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .overlay-card p { margin: 0; color: var(--muted); }
 
+.overlay-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.overlay-actions button { flex: 1 1 auto; }
+@media (max-width: 30rem) {
+  .overlay-actions { flex-direction: column; }
+}
+
 .overlay-card button {
   font: inherit;
   padding: 0.5rem 0.875rem;
   border-radius: 0.5rem;
-  border: 0;
+  border: 1px solid var(--accent);
   background: var(--accent);
   color: var(--accent-ink);
   cursor: pointer;
 }
+.overlay-card button.overlay-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.overlay-card button.overlay-secondary:hover { border-color: var(--accent); }
 
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
@@ -446,6 +458,39 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .settings-option.active .settings-check { opacity: 1; }
 .settings-option:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .settings-note { margin: 0; font-size: 0.78125rem; color: var(--muted); }
+.settings-credit { margin: 0; font-size: 0.75rem; color: var(--muted); }
+.settings-credit a { color: inherit; text-decoration: underline; border-radius: 0.25rem; }
+.settings-credit a:hover { color: var(--ink); }
+.settings-credit a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.over-row {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.over-row:not(:has(:not([hidden]))) { display: none; }
+.over-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 62rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.btn-link {
+  font: inherit;
+  font-size: 0.875rem;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn-link:hover { border-color: var(--accent); }
 
 .view-controls {
   position: absolute;
