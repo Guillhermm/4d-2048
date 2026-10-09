@@ -48,6 +48,13 @@ ES modules do not load from `file://`, so serve the folder:
 npm run serve        # http://127.0.0.1:8000
 ```
 
+## Deploying
+
+`.github/workflows/pages.yml` publishes to GitHub Pages on every push to `main`: it runs the
+tests, copies `index.html`, `styles.css` and `src/` into the site, and deploys that. Nothing else
+in the repository is published. In the repository settings, Pages must have its source set to
+GitHub Actions.
+
 ## Tests
 
 ```sh
@@ -58,7 +65,8 @@ npm test
 spawning, picking an axis from a swipe, the board geometry and the default view, fitting the
 board around the on-board buttons, projection,
 rotation, every translation (same keys and placeholders as English), and loading saved
-preferences, including corrupt or hostile values.
+preferences, including corrupt or hostile values, and that every file the page loads is in the published
+site under a relative path.
 
 ## Layout
 
