@@ -43,7 +43,7 @@ Without storage (a private window, for example) the game still works and saves n
 The game itself is saved after every move and new game, under the same key, and comes back on
 reload: board, score, moves and whether the 2048 card was already shown. A saved game that fails
 validation (wrong cell count, a tile that is not a power of two, a bad score) is dropped whole.
-Settings also carry a link to the author's GitHub profile.
+Settings also credit the author, with links to GitHub, LinkedIn and a personal website.
 
 ## Game over
 

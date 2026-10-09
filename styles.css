@@ -458,10 +458,28 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .settings-option.active .settings-check { opacity: 1; }
 .settings-option:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .settings-note { margin: 0; font-size: 0.78125rem; color: var(--muted); }
-.settings-credit { margin: 0; font-size: 0.75rem; color: var(--muted); }
-.settings-credit a { color: inherit; text-decoration: underline; border-radius: 0.25rem; }
-.settings-credit a:hover { color: var(--ink); }
-.settings-credit a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.settings-credit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.settings-credit p { margin: 0; }
+.credit-links { display: flex; gap: 0.25rem; }
+.credit-links a {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: inherit;
+  border-radius: 0.375rem;
+}
+.credit-links a:hover { color: var(--ink); }
+.credit-links .icon { width: 1.125rem; height: 1.125rem; }
+.icon-brand { fill: currentColor; stroke: none; }
+.credit-links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .over-row {
   grid-column: 1 / -1;
