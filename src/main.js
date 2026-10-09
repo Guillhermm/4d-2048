@@ -2,7 +2,9 @@ import { reorthonormalize, rotate } from "./linalg.js";
 import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
 import { cellPosition, compassView, gridEdges, screenAxes, swipeTolerances } from "./board.js";
 import { createRenderer } from "./renderer.js";
-import { DEFAULT_LANGUAGE, translate } from "./i18n.js";
+import { DEFAULT_LANGUAGE, languages, translate } from "./i18n.js";
+import { browserStorage, loadPreferences, savePreferences } from "./preferences.js";
+import { applyTheme, createSettings } from "./settings.js";
 
 const AXIS_NAMES = ["x", "y", "z", "w"];
 const SLIDE_MS = 150;
@@ -31,14 +33,15 @@ const KEYS = {
 const $ = (id) => document.getElementById(id);
 const box = $("canvasBox");
 const renderer = createRenderer($("board"), box);
+const storage = browserStorage();
+const prefs = loadPreferences(storage, languages());
 
 const state = {
-  language: DEFAULT_LANGUAGE,
+  language: prefs.language ?? DEFAULT_LANGUAGE,
   // The engine handles any side; the game ships the 2×2×2×2 board only.
   side: 2,
   cells: null,
   score: 0,
-  best: 0,
   moves: 0,
   won: false,
   over: false,
@@ -56,6 +59,8 @@ const state = {
 
 const t = (key, params) => translate(state.language, key, params);
 
+const best = () => prefs.best[state.side] ?? 0;
+
 const start = () => {
   state.cells = newGame(state.side);
   state.score = 0;
@@ -71,9 +76,12 @@ const start = () => {
 };
 
 const updateScores = () => {
-  state.best = Math.max(state.best, state.score);
+  if (state.score > best()) {
+    prefs.best[state.side] = state.score;
+    savePreferences(storage, prefs);
+  }
   $("score").textContent = String(state.score);
-  $("best").textContent = String(state.best);
+  $("best").textContent = String(best());
   $("moveCount").textContent = t("moves", { count: state.moves });
 };
 
@@ -210,6 +218,7 @@ const tick = (now) => {
 };
 
 window.addEventListener("keydown", (e) => {
+  if ($("settings").open) return;
   if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
   const mapped = KEYS[e.code];
   if (!mapped) return;
@@ -272,6 +281,25 @@ const keyLabel = (axis, dir) => {
   return keys[`${AXIS_NAMES[axis]}${dir > 0 ? "Plus" : "Minus"}`];
 };
 
+const settings = createSettings({
+  dialog: $("settings"),
+  translate: (key) => t(key),
+  current: () => ({ theme: prefs.theme ?? "system", language: state.language }),
+  onThemeChange(theme) {
+    prefs.theme = theme;
+    savePreferences(storage, prefs);
+    applyTheme(theme);
+  },
+  onLanguageChange(language) {
+    state.language = language;
+    prefs.language = language;
+    savePreferences(storage, prefs);
+    applyLanguage();
+  },
+});
+$("openSettings").addEventListener("click", () => settings.open());
+$("closeSettings").addEventListener("click", () => $("settings").close());
+
 const applyLanguage = () => {
   document.documentElement.lang = state.language;
   for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
@@ -286,6 +314,7 @@ const applyLanguage = () => {
   hintText = "";
   updateSwipeHint();
   if (state.overlay) setOverlay(state.overlay);
+  if ($("settings").open) settings.render();
 };
 
 const updateViewControls = () => {
@@ -324,6 +353,10 @@ new ResizeObserver(() => {
   measureControls();
 }).observe(box);
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => renderer.readColors());
+new MutationObserver(() => renderer.readColors()).observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ["data-theme"],
+});
 
 buildPad();
 renderer.readColors();

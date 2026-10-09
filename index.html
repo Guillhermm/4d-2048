@@ -6,6 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>2048 4D</title>
+<script src="src/theme-boot.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -16,6 +17,10 @@
 <body>
 <div class="wrap">
   <svg class="sprite" aria-hidden="true">
+    <symbol id="i-gear" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.4"/>
+      <path d="M19.4 14a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5v.2a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 010-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 014 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1h.2a2 2 0 010 4h-.1a1.6 1.6 0 00-1.5 1z"/>
+    </symbol>
     <symbol id="i-move" viewBox="0 0 24 24">
       <path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>
     </symbol>
@@ -33,10 +38,18 @@
       <circle cx="12" cy="12" r="1.2"/>
       <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>
     </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M5 12.5l4.5 4.5L19 7.5"/>
+    </symbol>
   </svg>
 
   <header>
-    <h1>2048 4D</h1>
+    <div class="brand-row">
+      <h1>2048 4D</h1>
+      <button type="button" id="openSettings" class="btn-settings" data-i18n-aria="settings" data-i18n-title="settings" aria-label="Settings" title="Settings">
+        <svg class="icon" aria-hidden="true"><use href="#i-gear"/></svg>
+      </button>
+    </div>
     <p class="lede" data-i18n="lede"></p>
   </header>
 
@@ -93,5 +106,22 @@
     </aside>
   </div>
 </div>
+<dialog id="settings" class="settings" aria-labelledby="settingsTitle">
+  <div class="settings-body">
+    <div class="settings-head">
+      <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+      <button type="button" id="closeSettings" class="settings-close" data-i18n-aria="close" aria-label="Close">&times;</button>
+    </div>
+    <section class="settings-group">
+      <h3 class="settings-group-title" id="appearanceTitle" data-i18n="appearance">Appearance</h3>
+      <ul class="settings-options" id="themeOptions" role="radiogroup" aria-labelledby="appearanceTitle"></ul>
+    </section>
+    <section class="settings-group">
+      <h3 class="settings-group-title" id="languageTitle" data-i18n="language">Language</h3>
+      <ul class="settings-options" id="languageOptions" role="radiogroup" aria-labelledby="languageTitle"></ul>
+    </section>
+    <p class="settings-note" data-i18n="settingsNote"></p>
+  </div>
+</dialog>
 </body>
 </html>
