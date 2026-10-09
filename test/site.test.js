@@ -67,3 +67,11 @@ test("every icon the manifest names is published and exists", () => {
     assert.ok(existsSync(join(root, src)), `${src} does not exist`);
   }
 });
+
+// Right after a deploy the stylesheet can be a stale copy; without a size an SVG falls back to 300x150.
+test("every icon has its own size, so it stays small without the stylesheet", () => {
+  const html = readFileSync(join(root, "index.html"), "utf8");
+  const icons = [...html.matchAll(/<svg class="icon[^>]*>/g)].map(([tag]) => tag);
+  assert.ok(icons.length > 0);
+  for (const tag of icons) assert.match(tag, /width="\d+" height="\d+"/, tag);
+});

@@ -1,8 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import { LOCALES } from "../src/locales/index.js";
-import { languageName, languages, translate } from "../src/i18n.js";
+import { languageName, languages, translate, translateOr } from "../src/i18n.js";
 
 const placeholders = (text) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 const english = LOCALES.en.messages;
@@ -43,4 +44,22 @@ test("placeholders are filled and unknown ones are left alone", () => {
 test("an unknown language falls back to English; an unknown key throws", () => {
   assert.equal(translate("xx", "newGame"), "New game");
   assert.throws(() => translate("en", "noSuchKey"), /Missing translation key/);
+});
+
+test("a key no locale has falls back instead of throwing", () => {
+  assert.equal(translateOr("en", "noSuchKey", "kept"), "kept");
+  assert.equal(translateOr("pt-BR", "overText", "x", { score: 7 }), translate("pt-BR", "overText", { score: 7 }));
+});
+
+// translateOr hides a missing key from players, so a typo has to be caught here instead.
+test("every key the page asks for exists in English", () => {
+  const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+  const html = read("index.html");
+  const main = read("src/main.js");
+  const keys = [
+    ...[...html.matchAll(/data-i18n(?:-aria|-title)?="([^"]+)"/g)].map(([, key]) => key),
+    ...[...main.matchAll(/\bt\("([^"]+)"/g)].map(([, key]) => key),
+  ];
+  assert.ok(keys.length > 20);
+  for (const key of keys) assert.ok(key in english, key);
 });

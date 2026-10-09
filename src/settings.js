@@ -15,6 +15,8 @@ export const applyTheme = (theme) => {
 const checkIcon = () => {
   const svg = document.createElementNS(SVG, "svg");
   svg.setAttribute("class", "icon settings-check");
+  svg.setAttribute("width", "20");
+  svg.setAttribute("height", "20");
   svg.setAttribute("aria-hidden", "true");
   const use = document.createElementNS(SVG, "use");
   use.setAttribute("href", "#i-check");

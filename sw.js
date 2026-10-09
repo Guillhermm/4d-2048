@@ -1,5 +1,8 @@
 // Network first, so a deploy shows up on the next load; the precached shell covers offline.
-const CACHE = "4d-2048-v1";
+// Pages sends max-age=600, so requests that reach the worker skip the HTTP cache. Chrome can still
+// serve scripts from its memory cache without asking the worker, which is why the page itself
+// tolerates a mix of old and new files for those ten minutes.
+const CACHE = "4d-2048-v2";
 const SHELL = [
   "./",
   "index.html",
@@ -37,7 +40,7 @@ const SHELL = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL.map((url) => new Request(url, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -53,7 +56,7 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
   event.respondWith(
-    fetch(request)
+    fetch(request, { cache: "no-cache" })
       .then((response) => {
         if (response.ok) {
           const copy = response.clone();

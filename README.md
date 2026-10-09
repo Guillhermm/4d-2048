@@ -67,6 +67,11 @@ tests, copies `index.html`, `styles.css`, `manifest.webmanifest`, `sw.js`, `site
 `icons/` and `fonts/` into the site, and deploys that. Nothing else in the repository is published. In the repository settings, Pages must have its source set to
 GitHub Actions.
 
+Pages caches every file for ten minutes, and the service worker cannot see requests Chrome answers
+from its memory cache, so a load right after a deploy can mix old and new files. The page is built
+to survive that: a translation key the loaded locales lack keeps the English text already in the
+HTML, and every icon carries its own size in case the stylesheet is the stale one.
+
 ## Install, offline and search
 
 The page is an installable Progressive Web App: `manifest.webmanifest` describes it and `sw.js`

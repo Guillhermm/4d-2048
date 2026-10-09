@@ -2,7 +2,7 @@ import { reorthonormalize, rotate } from "./linalg.js";
 import { canMove, cellCount, directionFromSwipe, move, newGame, spawn, WIN_VALUE } from "./game.js";
 import { cellPosition, compassView, gridEdges, screenAxes, swipeTolerances } from "./board.js";
 import { createRenderer } from "./renderer.js";
-import { DEFAULT_LANGUAGE, languages, translate } from "./i18n.js";
+import { DEFAULT_LANGUAGE, languages, translateOr } from "./i18n.js";
 import { browserStorage, loadPreferences, savePreferences } from "./preferences.js";
 import { applyTheme, createSettings } from "./settings.js";
 
@@ -57,7 +57,7 @@ const state = {
   edges: [],
 };
 
-const t = (key, params) => translate(state.language, key, params);
+const t = (key, params, fallback = key) => translateOr(state.language, key, fallback, params);
 
 const best = () => prefs.best[state.side] ?? 0;
 
@@ -343,9 +343,9 @@ $("closeSettings").addEventListener("click", () => $("settings").close());
 
 const applyLanguage = () => {
   document.documentElement.lang = state.language;
-  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
-  for (const el of document.querySelectorAll("[data-i18n-aria]")) el.setAttribute("aria-label", t(el.dataset.i18nAria));
-  for (const el of document.querySelectorAll("[data-i18n-title]")) el.title = t(el.dataset.i18nTitle);
+  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n, {}, el.textContent);
+  for (const el of document.querySelectorAll("[data-i18n-aria]")) el.setAttribute("aria-label", t(el.dataset.i18nAria, {}, el.getAttribute("aria-label")));
+  for (const el of document.querySelectorAll("[data-i18n-title]")) el.title = t(el.dataset.i18nTitle, {}, el.title);
   for (const { btn, key, axis, dir, name } of padButtons) {
     btn.setAttribute("aria-label", t("moveToward", { direction: `${dir > 0 ? "+" : "−"}${name}` }));
     key.textContent = keyLabel(axis, dir);

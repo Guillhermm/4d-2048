@@ -58,6 +58,14 @@ test("the service worker has one fixed cache and takes over at once", () => {
   assert.match(sw, /caches\.match\("index\.html"\)/);
 });
 
+// Pages caches every file for ten minutes; requests the worker sees must not reuse that cache.
+test("the service worker revalidates instead of reading the HTTP cache", () => {
+  const sw = read("sw.js");
+  assert.match(sw, /new Request\(url, \{ cache: "reload" \}\)/);
+  assert.match(sw, /fetch\(request, \{ cache: "no-cache" \}\)/);
+  assert.equal(sw.match(/fetch\(/g).length, 1);
+});
+
 test("main.js registers the worker behind a feature check", () => {
   const main = read("src/main.js");
   assert.match(main, /"serviceWorker" in navigator/);
