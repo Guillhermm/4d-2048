@@ -403,7 +403,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 .settings::backdrop { background: color-mix(in srgb, var(--bg) 60%, transparent); }
 .settings-body { padding: 1.125rem 1.25rem 1.25rem; display: grid; gap: 1.125rem; }
-.settings-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.settings-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
 .settings-head h2 { font-family: var(--display); font-size: 1.375rem; margin: 0; }
 .settings-close {
   font: inherit;
@@ -457,7 +457,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .settings-option .settings-check { opacity: 0; flex-shrink: 0; }
 .settings-option.active .settings-check { opacity: 1; }
 .settings-option:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.settings-note { margin: 0; font-size: 0.78125rem; color: var(--muted); }
+.settings-note { margin: 0.125rem 0 0; font-size: 0.78125rem; color: var(--muted); }
 .settings-credit {
   display: flex;
   align-items: center;

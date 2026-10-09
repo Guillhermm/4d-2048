@@ -166,10 +166,13 @@
     </aside>
   </div>
 </div>
-<dialog id="settings" class="settings" aria-labelledby="settingsTitle">
+<dialog id="settings" class="settings" aria-labelledby="settingsTitle" aria-describedby="settingsNote">
   <div class="settings-body">
     <div class="settings-head">
-      <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+      <div>
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <p class="settings-note" id="settingsNote" data-i18n="settingsNote">Settings are saved on this device.</p>
+      </div>
       <button type="button" id="closeSettings" class="settings-close" data-i18n-aria="close" aria-label="Close">&times;</button>
     </div>
     <section class="settings-group">
@@ -180,7 +183,6 @@
       <h3 class="settings-group-title" id="languageTitle" data-i18n="language">Language</h3>
       <ul class="settings-options" id="languageOptions" role="radiogroup" aria-labelledby="languageTitle"></ul>
     </section>
-    <p class="settings-note" data-i18n="settingsNote">Settings are saved on this device.</p>
     <div class="settings-credit">
       <p><span data-i18n="madeBy">Made by</span> Guilherme Almeida Zeni</p>
       <div class="credit-links">
